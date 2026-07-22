@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "rails_saas_guard"
+command = ARGV.shift
+case command
+when "version", "--version", "-v" then puts RailsSaasGuard::VERSION
+when "ops-path" then puts File.expand_path("../ops", __dir__)
+else
+  warn "Usage: rails_saas_guard [version|ops-path]"
+  exit 1
+end

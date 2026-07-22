@@ -1,0 +1,9 @@
+[rails-saas-guard-php]
+enabled = true
+filter = rails-saas-guard-php
+logpath = /var/log/nginx/access.log
+backend = auto
+findtime = 10m
+maxretry = 5
+bantime = 1h
+action = %(action_)s
