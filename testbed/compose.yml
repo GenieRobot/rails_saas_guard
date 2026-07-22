@@ -1,0 +1,60 @@
+version: "3.8"
+
+networks:
+  target:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
+services:
+  redis:
+    build:
+      context: ..
+      dockerfile: testbed/redis/Dockerfile
+    networks: [target]
+
+  app:
+    build:
+      context: ..
+      dockerfile: testbed/app/Dockerfile
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      RAILS_SAAS_GUARD_SECRET: testbed-discriminator-secret
+      SECRET_KEY_BASE: testbed-secret-key-base-must-never-be-used-in-production
+      TRUSTED_PROXY: 172.28.0.10
+    depends_on: [redis]
+    networks: [target]
+
+  nginx:
+    build:
+      context: ..
+      dockerfile: testbed/nginx/Dockerfile
+    depends_on: [app]
+    ports:
+      - "127.0.0.1:18080:8080"
+    networks:
+      target:
+        ipv4_address: 172.28.0.10
+
+  attacker:
+    build:
+      context: ..
+      dockerfile: testbed/attacker/Dockerfile
+    depends_on: [nginx]
+    environment:
+      TARGET: http://nginx:8080
+    networks: [target]
+
+  system:
+    build:
+      context: ..
+      dockerfile: testbed/system/Dockerfile
+    privileged: true
+    tmpfs:
+      - /run
+      - /run/lock
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    networks: [target]
+    profiles: [host-controls]

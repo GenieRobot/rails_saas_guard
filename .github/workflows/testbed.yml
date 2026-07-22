@@ -1,0 +1,35 @@
+name: Isolated security testbed
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/testbed.yml"
+      - "lib/**"
+      - "ops/**"
+      - "testbed/**"
+      - "Gemfile*"
+      - "rails_saas_guard.gemspec"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  app-attacks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - run: ./testbed/bin/test_app
+
+  host-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Run privileged disposable host target
+        run: ./testbed/bin/test_host_controls

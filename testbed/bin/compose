@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+if command -v docker >/dev/null && docker compose version >/dev/null 2>&1; then
+  engine=(docker compose)
+elif command -v podman >/dev/null && podman compose version >/dev/null 2>&1; then
+  engine=(podman compose)
+else
+  echo "Docker Compose or Podman Compose is required." >&2
+  exit 1
+fi
+
+exec "${engine[@]}" --project-directory "$ROOT/testbed" -f "$ROOT/testbed/compose.yml" "$@"

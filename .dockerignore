@@ -1,0 +1,9 @@
+.git
+.bundle
+*.gem
+coverage
+pkg
+testbed/app/log/*
+testbed/app/storage/*
+testbed/app/tmp/*
+testbed/app/vendor/bundle
