@@ -16,6 +16,8 @@ The app-layer profile publishes only Nginx on `127.0.0.1:18080`. Redis and Rails
 
 Use Docker Compose or Podman Compose with support for Compose profiles. The host-control suite requires Linux, cgroup v2, systemd container support, and permission to start a privileged disposable container. Review `compose.yml` before running it.
 
+The wrapper automatically adds `compose.docker.yml` under Docker so the systemd target shares the host cgroup namespace. Podman uses only the portable base file because older Podman Compose providers reject that Docker-specific setting.
+
 ## Run
 
 ```sh

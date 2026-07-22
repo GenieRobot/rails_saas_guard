@@ -2,13 +2,16 @@
 set -euo pipefail
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-if command -v docker >/dev/null && docker compose version >/dev/null 2>&1; then
+docker_version="$(docker --version 2>/dev/null || true)"
+if [[ -n "$docker_version" && "$docker_version" != *podman* ]] && docker compose version >/dev/null 2>&1; then
   engine=(docker compose)
+  files=(-f "$ROOT/testbed/compose.yml" -f "$ROOT/testbed/compose.docker.yml")
 elif command -v podman >/dev/null && podman compose version >/dev/null 2>&1; then
   engine=(podman compose)
+  files=(-f "$ROOT/testbed/compose.yml")
 else
   echo "Docker Compose or Podman Compose is required." >&2
   exit 1
 fi
 
-exec "${engine[@]}" --project-directory "$ROOT/testbed" -f "$ROOT/testbed/compose.yml" "$@"
+exec "${engine[@]}" --project-directory "$ROOT/testbed" "${files[@]}" "$@"
