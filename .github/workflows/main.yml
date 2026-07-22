@@ -40,5 +40,5 @@ jobs:
       - name: Check operations scripts
         run: |
           sudo apt-get update
-          sudo apt-get install -y fail2ban
+          sudo apt-get install -y acl attr fail2ban
           ./ops/test.sh
