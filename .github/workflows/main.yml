@@ -38,5 +38,6 @@ jobs:
           gem specification rails_saas_guard-*.gem files
       - name: Check operations scripts
         run: |
-          bash -n ops/install.sh
-          bash -n ops/verify.sh
+          sudo apt-get update
+          sudo apt-get install -y fail2ban
+          ./ops/test.sh

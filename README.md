@@ -178,6 +178,21 @@ The script prints its plan and requires typing `yes`. Sudo itself requests the p
 
 The installer backs up replaced files under `/var/backups/rails-saas-guard/<timestamp>/`, validates fail2ban/Nginx/SSH before reloads, and refuses SSH password hardening unless the current user has an `authorized_keys` file. The Nginx snippet is installed but not automatically included or reloaded.
 
+Existing root-owned configuration files retain their original owner, group, and mode. Newly created system configuration files use `root:root 0644`. Full-path backups and a manifest are written before replacement; configuration files changed during a failed run are restored automatically. Package installation and firewall state are reported separately and are not silently removed during file rollback.
+
+Fail2ban is installed with an enabled PHP-probe jail and is configurable at installation time:
+
+```sh
+./ops/install.sh --modules fail2ban \
+  --fail2ban-logpath /var/log/nginx/access.log \
+  --fail2ban-findtime 10m \
+  --fail2ban-maxretry 5 \
+  --fail2ban-bantime 1h \
+  --fail2ban-ignoreip "127.0.0.1/8 ::1"
+```
+
+The installer tests the filter against bundled IPv4/IPv6 Nginx fixtures, validates the complete fail2ban configuration, reloads the service, and verifies that the jail is active.
+
 UFW opens OpenSSH, ports 80 and 443 before enabling the firewall. Review cloud firewalls and any additional required ports first. SSH hardening disables password and root login; keep an existing session open and verify a second key-based login before disconnecting.
 
 Verify installed components:
@@ -186,7 +201,7 @@ Verify installed components:
 ./ops/verify.sh
 ```
 
-Rollback is currently manual: restore the relevant files from the printed backup directory, validate the service configuration, and reload that service. Automatic rollback will not be claimed until it has integration tests on disposable Ubuntu hosts.
+For a later manual rollback, restore the relevant full-path file from the printed backup directory, validate the service configuration, and reload that service. Keep the generated manifest with deployment records.
 
 ## Threat-intelligence maintenance
 
