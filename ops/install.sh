@@ -14,6 +14,9 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 declare -a CHANGED_TARGETS=()
 backup_dir=""
 ROLLBACK_ACTIVE=0
+RSG_PRIVILEGE=(sudo)
+# shellcheck source=lib/file_transaction.sh
+source "$SCRIPT_DIR/lib/file_transaction.sh"
 
 usage() {
   cat <<'USAGE'
@@ -98,35 +101,13 @@ rollback() {
   [[ $ROLLBACK_ACTIVE -eq 1 ]] || exit "$exit_code"
   trap - ERR
   echo "Installation failed; restoring changed files from $backup_dir" >&2
-  for ((index=${#CHANGED_TARGETS[@]} - 1; index >= 0; index--)); do
-    target="${CHANGED_TARGETS[$index]}"
-    saved="$backup_dir$target"
-    if sudo test -e "$saved"; then
-      sudo cp -a "$saved" "$target"
-    else
-      sudo rm -f -- "$target"
-    fi
-  done
+  rsg_restore_changes
   exit "$exit_code"
 }
 trap rollback ERR
 
 backup_and_install() {
-  local source="$1" target="$2"
-  local mode="0644" owner="root" group="root" state="created"
-  [[ -f "$source" ]] || die "source file missing: $source"
-  if sudo test -e "$target"; then
-    owner="$(sudo stat -c %U "$target")"
-    group="$(sudo stat -c %G "$target")"
-    mode="$(sudo stat -c %a "$target")"
-    [[ "$owner" == "root" ]] || die "refusing to replace non-root-owned system file: $target"
-    sudo install -d -m 0700 "$(dirname "$backup_dir$target")"
-    sudo cp -a "$target" "$backup_dir$target"
-    state="replaced"
-  fi
-  CHANGED_TARGETS+=("$target")
-  printf '%s\t%s\t%s:%s\t%s\n' "$state" "$target" "$owner" "$group" "$mode" | sudo tee -a "$backup_dir/manifest.tsv" >/dev/null
-  sudo install -D -o "$owner" -g "$group" -m "$mode" "$source" "$target"
+  rsg_backup_and_install "$@"
 }
 
 render_fail2ban_jail() {

@@ -178,7 +178,9 @@ The script prints its plan and requires typing `yes`. Sudo itself requests the p
 
 The installer backs up replaced files under `/var/backups/rails-saas-guard/<timestamp>/`, validates fail2ban/Nginx/SSH before reloads, and refuses SSH password hardening unless the current user has an `authorized_keys` file. The Nginx snippet is installed but not automatically included or reloaded.
 
-Existing root-owned configuration files retain their original owner, group, and mode. Newly created system configuration files use `root:root 0644`. Full-path backups and a manifest are written before replacement; configuration files changed during a failed run are restored automatically. Package installation and firewall state are reported separately and are not silently removed during file rollback.
+Existing configuration files retain their complete available filesystem metadata, including numeric ownership, mode, ACLs, extended attributes, capabilities, and security context where the filesystem and `cp --preserve=all` support them. Replacement clones the original inode metadata, changes only file content, and atomically renames the candidate on the same filesystem. Rollback removes the candidate inode before restoring the archived 1:1 copy.
+
+For a genuinely new file there is no original metadata to preserve. The installer copies owner, group, and mode from an existing sibling in the target configuration directory. In an otherwise-empty directory it inherits numeric ownership and derives a non-executable file mode from that directory's permission policy. Full-path backups, before/after SHA-256 values, and a manifest are written for audit. Package installation and firewall state are reported separately and are not silently removed during file rollback.
 
 Fail2ban is installed with an enabled PHP-probe jail and is configurable at installation time:
 
