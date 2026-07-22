@@ -194,7 +194,7 @@ New rules must be evidence-driven. The maintenance workflow should monitor Rails
 
 The safe workflow is: collect → deduplicate → assess Rails/Rack/Ubuntu relevance → reproduce → add assumed-red bypass and false-positive tests → implement → run CI → open a reviewed pull request → prepare release notes → approve and publish. No feed item may autonomously publish a gem or modify consumer applications.
 
-The scheduled GitHub workflow opens a bounded weekly review task and audits Ruby dependencies. External text is always untrusted data. Optional consumer-facing prompt-injection controls and the automation's own prompt-injection boundary are described in [docs/ROADMAP.md](docs/ROADMAP.md).
+The scheduled GitHub workflow audits Ruby dependencies and fetches bounded data from the official Rails security category and CISA KEV feed. It emits only validated CVE identifiers and source links, opens at most one review issue, and stores the report as a short-lived artifact. It does not copy advisory prose, generate patches, merge, or publish. Optional consumer-facing prompt-injection controls and the automation's own prompt-injection boundary are described in [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Release policy
 
