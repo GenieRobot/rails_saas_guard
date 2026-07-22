@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+trap '"$SCRIPT_DIR/compose" down --volumes --remove-orphans' EXIT
+"$SCRIPT_DIR/compose" up --build --abort-on-container-exit --exit-code-from attacker redis app nginx attacker

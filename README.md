@@ -156,6 +156,15 @@ Run this gem's suite with:
 bundle exec rake
 ```
 
+The repository also includes an [isolated Ubuntu 24.04 security testbed](testbed/README.md). It runs a generated Rails fixture behind Nginx with Redis and a bounded attacker container, plus an opt-in privileged systemd target for the host-operation modules:
+
+```sh
+./testbed/bin/test_app
+./testbed/bin/test_host_controls
+```
+
+Use it only against the bundled, locally controlled targets. The documented corpus includes malicious requests and false-positive boundaries, but deliberately makes no claim to simulate every possible attack.
+
 ## Ubuntu 24.04 operations
 
 Review the complete plan without sudo or changes:
