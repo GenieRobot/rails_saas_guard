@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Ruby ${{ matrix.ruby }}
     strategy:
+      fail-fast: false
       matrix:
         ruby:
           - '3.2'
@@ -38,5 +39,6 @@ jobs:
           gem specification rails_saas_guard-*.gem files
       - name: Check operations scripts
         run: |
-          bash -n ops/install.sh
-          bash -n ops/verify.sh
+          sudo apt-get update
+          sudo apt-get install -y fail2ban
+          ./ops/test.sh
