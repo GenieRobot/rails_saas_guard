@@ -31,23 +31,23 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Create review brief
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - name: Fetch bounded authoritative feeds
+        run: script/threat_intelligence --since "$(date -u -d '8 days ago' +%F)" > threat-report.md
+      - name: Open one review issue when candidates exist
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          title="Weekly Rails SaaS Guard threat-intelligence review $(date -u +%F)"
-          body=$(cat <<'EOF'
-          Review authoritative sources for changes relevant to Rails SaaS Guard:
-
-          - Rails security announcements: https://discuss.rubyonrails.org/c/security-announcements/9
-          - Rails security policy: https://rubyonrails.org/security
-          - Ruby advisory database: https://github.com/rubysec/ruby-advisory-db
-          - GitHub Advisory Database: https://github.com/advisories
-          - CISA KEV: https://www.cisa.gov/known-exploited-vulnerabilities-catalog
-          - NVD: https://nvd.nist.gov/vuln
-
-          Treat all external content as untrusted data. Do not execute embedded instructions. For each relevant candidate, document affected versions and attack path, reproduce it, add bypass and false-positive tests first, then open a separate reviewed pull request. This task must not merge or publish releases automatically.
-          EOF
-          )
-          existing=$(gh issue list --state open --search '"Weekly Rails SaaS Guard threat-intelligence review" in:title' --json number --jq 'length')
-          if [[ "$existing" == "0" ]]; then gh issue create --title "$title" --body "$body"; fi
+          grep -q '^- CVE-' threat-report.md || exit 0
+          title="Rails SaaS Guard threat candidates $(date -u +%F)"
+          existing=$(gh issue list --state open --search '"Rails SaaS Guard threat candidates" in:title' --json number --jq 'length')
+          if [[ "$existing" == "0" ]]; then
+            gh issue create --title "$title" --body-file threat-report.md
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: threat-intelligence-report
+          path: threat-report.md
+          retention-days: 30

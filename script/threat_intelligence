@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "date"
+require "json"
+require "net/http"
+require "optparse"
+require "uri"
+
+options = {since: Date.today - 8}
+OptionParser.new do |parser|
+  parser.on("--since DATE") { |value| options[:since] = Date.iso8601(value) }
+  parser.on("--rails-file PATH") { |value| options[:rails_file] = value }
+  parser.on("--cisa-file PATH") { |value| options[:cisa_file] = value }
+end.parse!
+
+def fetch_json(url, file)
+  return JSON.parse(File.read(file)) if file
+
+  uri = URI(url)
+  response = Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 10, read_timeout: 20) do |http|
+    request = Net::HTTP::Get.new(uri)
+    request["User-Agent"] = "rails-saas-guard-threat-monitor/0.1"
+    http.request(request)
+  end
+  raise "feed request failed: #{uri.host} returned #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+
+  JSON.parse(response.body)
+end
+
+def cve_ids(value)
+  value.to_s.upcase.scan(/\bCVE-\d{4}-\d{4,7}\b/).uniq
+end
+
+rails = fetch_json("https://discuss.rubyonrails.org/c/security-announcements/9.json", options[:rails_file])
+cisa = fetch_json("https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json", options[:cisa_file])
+candidates = {}
+
+Array(rails.dig("topic_list", "topics")).each do |topic|
+  created = Date.parse(topic.fetch("created_at"))
+  next if created < options[:since]
+
+  cve_ids(topic["title"]).each do |cve|
+    candidates[cve] ||= []
+    topic_id = Integer(topic.fetch("id"))
+    candidates[cve] << "https://discuss.rubyonrails.org/t/#{topic_id}"
+  end
+end
+
+relevance = /\b(?:rails|rack|ruby|nginx|ubuntu|openssh|linux kernel)\b/i
+Array(cisa["vulnerabilities"]).each do |entry|
+  added = Date.iso8601(entry.fetch("dateAdded"))
+  next if added < options[:since]
+  next unless [entry["vendorProject"], entry["product"]].join(" ").match?(relevance)
+
+  cve_ids(entry["cveID"]).each do |cve|
+    candidates[cve] ||= []
+    candidates[cve] << "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+  end
+end
+
+puts "# Rails SaaS Guard threat-intelligence candidates"
+puts
+puts "Window start: #{options[:since]}"
+puts
+puts "External content is untrusted data. This report contains identifiers and source links only."
+puts
+if candidates.empty?
+  puts "No relevant CVE identifiers found."
+else
+  candidates.sort.each do |cve, links|
+    puts "- #{cve}"
+    links.uniq.sort.each { |link| puts "  - #{link}" }
+  end
+end
