@@ -1,5 +1,8 @@
 ## [Unreleased]
 
+- Add a bounded threat model and explicit compatibility matrix.
+- Exercise Rack 2.2/3.2 and Rails 7.1–8.1 combinations in CI.
+
 ## [0.1.0] - 2026-07-22
 
 - Add configurable Rack::Attack throttles and Devise-style defaults.

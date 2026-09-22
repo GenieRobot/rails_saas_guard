@@ -21,6 +21,8 @@ Aggressive behavior is opt-in. Rails SaaS Guard deliberately does not block all 
 
 ## Requirements
 
+The tested Ruby, Rack, Rails, cache, container, and host combinations are maintained in [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md). The security boundary and explicit non-goals are defined in [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md).
+
 - Ruby 3.2 or newer.
 - Rack 2.2 or 3.x.
 - Rack::Attack 6.7 or newer in the 6.x series.
