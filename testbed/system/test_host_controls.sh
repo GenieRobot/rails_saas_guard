@@ -14,7 +14,8 @@ sudo fail2ban-client status rails-saas-guard-php
 # Prove the installed jail consumes real Nginx log entries and can ban/unban.
 attacker_ip="198.51.100.66"
 for attempt in 1 2 3 4 5; do
-  printf '%s - - [22/Jul/2026:08:10:0%s +0000] "GET /shell%s.php HTTP/1.1" 403 153 "-" "testbed"\n' "$attacker_ip" "$attempt" "$attempt" | sudo tee -a /var/log/nginx/access.log >/dev/null
+  timestamp="$(date -u '+%d/%b/%Y:%H:%M:%S +0000')"
+  printf '%s - - [%s] "GET /shell%s.php HTTP/1.1" 403 153 "-" "testbed"\n' "$attacker_ip" "$timestamp" "$attempt" | sudo tee -a /var/log/nginx/access.log >/dev/null
 done
 for _ in 1 2 3 4 5; do
   if sudo fail2ban-client status rails-saas-guard-php | grep -q "$attacker_ip"; then break; fi
