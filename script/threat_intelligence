@@ -20,7 +20,7 @@ def fetch_json(url, file)
   uri = URI(url)
   response = Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 10, read_timeout: 20) do |http|
     request = Net::HTTP::Get.new(uri)
-    request["User-Agent"] = "rails-saas-guard-threat-monitor/0.1"
+    request["User-Agent"] = "rails-shield-threat-monitor/0.1"
     http.request(request)
   end
   raise "feed request failed: #{uri.host} returned #{response.code}" unless response.is_a?(Net::HTTPSuccess)
@@ -59,7 +59,7 @@ Array(cisa["vulnerabilities"]).each do |entry|
   end
 end
 
-puts "# Rails SaaS Guard threat-intelligence candidates"
+puts "# Rails Shield threat-intelligence candidates"
 puts
 puts "Window start: #{options[:since]}"
 puts

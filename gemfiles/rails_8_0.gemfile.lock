@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    rails_saas_guard (0.1.0)
+    rails_shield (0.1.0)
       rack (>= 2.2, < 4)
       rack-attack (>= 6.7, < 7)
 
@@ -238,7 +238,7 @@ PLATFORMS
 
 DEPENDENCIES
   rails (~> 8.0.0)
-  rails_saas_guard!
+  rails_shield!
   rake (~> 13.0)
   rspec (~> 3.0)
 
@@ -302,7 +302,7 @@ CHECKSUMS
   rails (8.0.5.1) sha256=c91cefbf38881876ddbe67b5e0246eb985d27d60c6bb1cd7034b4261de0ba495
   rails-dom-testing (2.3.0) sha256=8acc7953a7b911ca44588bf08737bc16719f431a1cc3091a292bca7317925c1d
   rails-html-sanitizer (1.7.1) sha256=e797a7c9b01e567307e317c576b49ab4168017e63eea4dba9ce3cb587e2f22c2
-  rails_saas_guard (0.1.0)
+  rails_shield (0.1.0)
   railties (8.0.5.1) sha256=da1958e1d9dab04691a2f8721b3ff7fab323715d37f103c19972dedfd644d5c7
   rake (13.4.2) sha256=cb825b2bd5f1f8e91ca37bddb4b9aaf345551b4731da62949be002fa89283701
   rbs (4.2.0) sha256=51f7b886dcc05bc09e10b901daa6a81829f6adc03101d6ca9ea4aac6103e0674

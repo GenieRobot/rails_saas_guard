@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       acl attr ca-certificates fail2ban iproute2 nginx openssh-server sudo systemd systemd-sysv ufw \
     && useradd -m -s /bin/bash tester \
     && install -d -m 0700 -o tester -g tester /home/tester/.ssh \
-    && printf 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestbedOnlyNotARealCredential rails-saas-guard-testbed\n' > /home/tester/.ssh/authorized_keys \
+    && printf 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestbedOnlyNotARealCredential rails-shield-testbed\n' > /home/tester/.ssh/authorized_keys \
     && chown tester:tester /home/tester/.ssh/authorized_keys \
     && chmod 0600 /home/tester/.ssh/authorized_keys \
     && printf 'tester ALL=(ALL) NOPASSWD:ALL\n' > /etc/sudoers.d/tester \

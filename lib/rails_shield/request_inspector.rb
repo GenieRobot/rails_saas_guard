@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RailsSaasGuard
+module RailsShield
   class RequestInspector
     MAX_BYTES = 4096
     PHP_PATH = %r{(?:\A|/)[^/?#]*\.php(?:\z|/)}i

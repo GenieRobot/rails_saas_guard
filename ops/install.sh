@@ -4,7 +4,7 @@ set -eEuo pipefail
 YES=0
 DRY_RUN=0
 MODULES="fail2ban,nginx"
-BACKUP_ROOT="/var/backups/rails-saas-guard"
+BACKUP_ROOT="/var/backups/rails-shield"
 FAIL2BAN_LOGPATH="/var/log/nginx/access.log"
 FAIL2BAN_FINDTIME="10m"
 FAIL2BAN_MAXRETRY="5"
@@ -65,7 +65,7 @@ for module in "${selected[@]}"; do
   [[ "$module" =~ ^(fail2ban|nginx|ufw|ssh)$ ]] || die "unknown module: $module"
 done
 
-echo "Rails SaaS Guard operations plan"
+echo "Rails Shield operations plan"
 echo "  Host: Ubuntu 24.04 LTS"
 echo "  Modules: $MODULES"
 echo "  Backups: $BACKUP_ROOT/<timestamp>/"
@@ -118,7 +118,7 @@ render_fail2ban_jail() {
     -e "s|@@MAXRETRY@@|$FAIL2BAN_MAXRETRY|g" \
     -e "s|@@BANTIME@@|$FAIL2BAN_BANTIME|g" \
     -e "s|@@IGNOREIP@@|$FAIL2BAN_IGNOREIP|g" \
-    "$SCRIPT_DIR/fail2ban/jail.d/rails-saas-guard.local" > "$target"
+    "$SCRIPT_DIR/fail2ban/jail.d/rails-shield.local" > "$target"
 }
 
 ROLLBACK_ACTIVE=1
@@ -130,17 +130,17 @@ for module in "${selected[@]}"; do
       jail_tmp="$(mktemp)"
       trap 'rm -f "${jail_tmp:-}"' EXIT
       render_fail2ban_jail "$jail_tmp"
-      fail2ban-regex "$SCRIPT_DIR/fixtures/nginx-access.log" "$SCRIPT_DIR/fail2ban/filter.d/rails-saas-guard-php.conf" --print-all-matched
-      backup_and_install "$SCRIPT_DIR/fail2ban/filter.d/rails-saas-guard-php.conf" /etc/fail2ban/filter.d/rails-saas-guard-php.conf
-      backup_and_install "$jail_tmp" /etc/fail2ban/jail.d/rails-saas-guard.local
+      fail2ban-regex "$SCRIPT_DIR/fixtures/nginx-access.log" "$SCRIPT_DIR/fail2ban/filter.d/rails-shield-php.conf" --print-all-matched
+      backup_and_install "$SCRIPT_DIR/fail2ban/filter.d/rails-shield-php.conf" /etc/fail2ban/filter.d/rails-shield-php.conf
+      backup_and_install "$jail_tmp" /etc/fail2ban/jail.d/rails-shield.local
       sudo fail2ban-client -t
       sudo systemctl enable --now fail2ban
       sudo systemctl reload fail2ban
-      sudo fail2ban-client status rails-saas-guard-php
+      sudo fail2ban-client status rails-shield-php
       ;;
     nginx)
       command -v nginx >/dev/null || die "Nginx is not installed"
-      backup_and_install "$SCRIPT_DIR/nginx/rails_saas_guard.conf" /etc/nginx/snippets/rails_saas_guard.conf
+      backup_and_install "$SCRIPT_DIR/nginx/rails_shield.conf" /etc/nginx/snippets/rails_shield.conf
       sudo nginx -t
       echo "Snippet installed but not included automatically. See ops/nginx/README.md."
       ;;
@@ -155,7 +155,7 @@ for module in "${selected[@]}"; do
       ;;
     ssh)
       [[ -s "$HOME/.ssh/authorized_keys" ]] || die "$HOME/.ssh/authorized_keys is missing or empty"
-      backup_and_install "$SCRIPT_DIR/ssh/99-rails-saas-guard.conf" /etc/ssh/sshd_config.d/99-rails-saas-guard.conf
+      backup_and_install "$SCRIPT_DIR/ssh/99-rails-shield.conf" /etc/ssh/sshd_config.d/99-rails-shield.conf
       sudo sshd -t
       sudo systemctl reload ssh
       ;;

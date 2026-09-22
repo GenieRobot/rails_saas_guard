@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    rails_saas_guard (0.1.0)
+    rails_shield (0.1.0)
       rack (>= 2.2, < 4)
       rack-attack (>= 6.7, < 7)
 
@@ -33,7 +33,7 @@ PLATFORMS
 
 DEPENDENCIES
   rack (~> 3.2.0)
-  rails_saas_guard!
+  rails_shield!
   rake (~> 13.0)
   rspec (~> 3.0)
 
@@ -42,7 +42,7 @@ CHECKSUMS
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
   rack (3.2.7) sha256=93e13e1c24f93556671d85d2d79fa228c3485815c50d7e2f265b5330c6528fb7
   rack-attack (6.8.0) sha256=f2499fdebf85bcc05573a22dff57d24305ac14ec2e4156cd3c28d47cafeeecf2
-  rails_saas_guard (0.1.0)
+  rails_shield (0.1.0)
   rake (13.4.2) sha256=cb825b2bd5f1f8e91ca37bddb4b9aaf345551b4731da62949be002fa89283701
   rspec (3.13.2) sha256=206284a08ad798e61f86d7ca3e376718d52c0bc944626b2349266f239f820587
   rspec-core (3.13.6) sha256=a8823c6411667b60a8bca135364351dda34cd55e44ff94c4be4633b37d828b2d

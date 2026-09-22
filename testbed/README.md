@@ -4,7 +4,7 @@ This testbed targets infrastructure owned and controlled by the developer. It mu
 
 ## Architecture
 
-- Ubuntu 24.04 Rails 8 fixture using the local Rails SaaS Guard checkout.
+- Ubuntu 24.04 Rails 8 fixture using the local Rails Shield checkout.
 - Ubuntu 24.04 Redis cache shared by Rack::Attack.
 - Ubuntu 24.04 Nginx reverse proxy that overwrites client forwarding headers.
 - Ubuntu 24.04 attacker container on an isolated network.

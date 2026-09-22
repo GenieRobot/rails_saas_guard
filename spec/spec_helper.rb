@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "rails_saas_guard"
+require "rails_shield"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

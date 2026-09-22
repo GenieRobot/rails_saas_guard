@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RailsSaasGuard
+module RailsShield
   class Configuration
     DEFAULT_PROBES = %w[/.aws /.env /.git /.hg /.svn /phpmyadmin /pma /server-status /wp-admin /wp-content /wp-login /wordpress /xmlrpc.php].freeze
     WEBDAV_METHODS = %w[PROPFIND PROPPATCH MKCOL COPY MOVE LOCK UNLOCK SEARCH].freeze
@@ -16,7 +16,7 @@ module RailsSaasGuard
     end
 
     def discriminator_secret
-      @discriminator_secret || (Rails.application.secret_key_base if defined?(Rails.application) && Rails.application) || ENV["RAILS_SAAS_GUARD_SECRET"]
+      @discriminator_secret || (Rails.application.secret_key_base if defined?(Rails.application) && Rails.application) || ENV["RAILS_SHIELD_SECRET"]
     end
 
     def general_requests(limit: 300, period: 300, exclude: %r{\A/(?:assets|packs)/})
@@ -51,15 +51,15 @@ module RailsSaasGuard
     def throttle(name, limit:, period:, sensitive: false, &block)
       discriminator = sensitive ? ->(r) {
         value = block.call(r)
-        RailsSaasGuard.sensitive_key(value) if value && !value.empty?
+        RailsShield.sensitive_key(value) if value && !value.empty?
       } : block
-      @throttles << {name: "rails_saas_guard/#{name}", limit:, period:, sensitive:, discriminator:}
+      @throttles << {name: "rails_shield/#{name}", limit:, period:, sensitive:, discriminator:}
     end
 
     def validate!
       raise ConfigurationError, "throttle limits and periods must be positive" if throttles.any? { |p| p[:limit] <= 0 || p[:period] <= 0 }
       if throttles.any? { |policy| policy[:sensitive] } && discriminator_secret.to_s.empty?
-        raise ConfigurationError, "set discriminator_secret or RAILS_SAAS_GUARD_SECRET"
+        raise ConfigurationError, "set discriminator_secret or RAILS_SHIELD_SECRET"
       end
     end
 
@@ -68,7 +68,7 @@ module RailsSaasGuard
     def default_event_handler
       return unless defined?(Rails.logger)
 
-      ->(event) { Rails.logger.warn({event: "rails_saas_guard", **event}.to_json) }
+      ->(event) { Rails.logger.warn({event: "rails_shield", **event}.to_json) }
     end
   end
 end

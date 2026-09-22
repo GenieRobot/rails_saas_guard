@@ -19,7 +19,7 @@ services:
       dockerfile: testbed/app/Dockerfile
     environment:
       REDIS_URL: redis://redis:6379/0
-      RAILS_SAAS_GUARD_SECRET: testbed-discriminator-secret
+      RAILS_SHIELD_SECRET: testbed-discriminator-secret
       SECRET_KEY_BASE: testbed-secret-key-base-must-never-be-used-in-production
       TRUSTED_PROXY: 172.28.0.10
     depends_on: [redis]

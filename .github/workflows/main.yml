@@ -35,8 +35,8 @@ jobs:
         run: bundle exec rake
       - name: Build and inspect gem
         run: |
-          gem build rails_saas_guard.gemspec
-          gem specification rails_saas_guard-*.gem files
+          gem build rails_shield.gemspec
+          gem specification rails_shield-*.gem files
       - name: Check operations scripts
         run: |
           sudo apt-get update
