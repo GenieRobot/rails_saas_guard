@@ -1,6 +1,6 @@
-[rails-saas-guard-php]
+[rails-shield-php]
 enabled = true
-filter = rails-saas-guard-php
+filter = rails-shield-php
 logpath = @@LOGPATH@@
 backend = auto
 findtime = @@FINDTIME@@

@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in rails_saas_guard.gemspec
+# Specify your gem's dependencies in rails_shield.gemspec
 gemspec
 
 gem "irb"

@@ -41,7 +41,7 @@ rsg_backup_and_install() {
     rsg_exec cp -a --reflink=auto -- "$target" "$backup_dir$target"
     before_sha="$(rsg_exec sha256sum "$target" | awk '{print $1}')"
     state="replaced"
-    staging="$(rsg_exec mktemp --tmpdir="$target_dir" ".rails-saas-guard.$(basename -- "$target").XXXXXX")"
+    staging="$(rsg_exec mktemp --tmpdir="$target_dir" ".rails-shield.$(basename -- "$target").XXXXXX")"
     rsg_exec rm -f -- "$staging"
     rsg_exec cp -a --reflink=auto -- "$target" "$staging"
   else
@@ -58,7 +58,7 @@ rsg_backup_and_install() {
       # Derive a non-executable file mode from the host directory policy.
       mode="$(printf '%04o' "$((8#$directory_mode & 8#666))")"
     fi
-    staging="$(rsg_exec mktemp --tmpdir="$target_dir" ".rails-saas-guard.$(basename -- "$target").XXXXXX")"
+    staging="$(rsg_exec mktemp --tmpdir="$target_dir" ".rails-shield.$(basename -- "$target").XXXXXX")"
     rsg_exec chown "$owner:$group" "$staging"
     rsg_exec chmod "$mode" "$staging"
   fi

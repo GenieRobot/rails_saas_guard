@@ -3,12 +3,12 @@
 require "json"
 require "openssl"
 require "rack/attack"
-require_relative "rails_saas_guard/version"
-require_relative "rails_saas_guard/configuration"
-require_relative "rails_saas_guard/request_inspector"
-require_relative "rails_saas_guard/responder"
+require_relative "rails_shield/version"
+require_relative "rails_shield/configuration"
+require_relative "rails_shield/request_inspector"
+require_relative "rails_shield/responder"
 
-module RailsSaasGuard
+module RailsShield
   class Error < StandardError; end
   class ConfigurationError < Error; end
   class << self
@@ -20,14 +20,14 @@ module RailsSaasGuard
 
     def install!(rack_attack: Rack::Attack)
       configuration.validate!
-      rack_attack.safelist("rails_saas_guard/safelist", &configuration.safelist) if configuration.safelist
+      rack_attack.safelist("rails_shield/safelist", &configuration.safelist) if configuration.safelist
       configuration.throttles.each do |policy|
         rack_attack.throttle(policy[:name], limit: policy[:limit], period: policy[:period], &policy[:discriminator])
       end
       inspector = RequestInspector.new(configuration)
-      rack_attack.blocklist("rails_saas_guard/probes") { |request| inspector.probe?(request) } if configuration.block_probe_paths
+      rack_attack.blocklist("rails_shield/probes") { |request| inspector.probe?(request) } if configuration.block_probe_paths
       methods = configuration.blocked_methods
-      rack_attack.blocklist("rails_saas_guard/methods") { |request| methods.include?(request.request_method.to_s.upcase) } if methods.any?
+      rack_attack.blocklist("rails_shield/methods") { |request| methods.include?(request.request_method.to_s.upcase) } if methods.any?
       rack_attack.throttled_responder = Responder.new(status: 429)
       rack_attack.blocklisted_responder = Responder.new(status: 403)
       install_instrumentation
@@ -55,4 +55,4 @@ module RailsSaasGuard
     end
   end
 end
-require_relative "rails_saas_guard/railtie" if defined?(Rails::Railtie)
+require_relative "rails_shield/railtie" if defined?(Rails::Railtie)

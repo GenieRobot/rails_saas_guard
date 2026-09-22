@@ -1,5 +1,5 @@
-RailsSaasGuard.configure do |config|
-  config.discriminator_secret = ENV.fetch("RAILS_SAAS_GUARD_SECRET")
+RailsShield.configure do |config|
+  config.discriminator_secret = ENV.fetch("RAILS_SHIELD_SECRET")
   config.general_requests limit: 200, period: 1.minute
   config.devise_defaults!
   config.endpoint "expensive/ip", path: "/expensive", methods: :post, limit: 2, period: 1.minute

@@ -1,6 +1,6 @@
 # Threat model
 
-This document defines the security boundary for Rails SaaS Guard 0.1. It is intentionally bounded: the gem is one application-layer control in a defense-in-depth deployment, not a WAF, authentication system, IDS, SIEM, vulnerability scanner, or volumetric DDoS service.
+This document defines the security boundary for Rails Shield 0.1. It is intentionally bounded: the gem is one application-layer control in a defense-in-depth deployment, not a WAF, authentication system, IDS, SIEM, vulnerability scanner, or volumetric DDoS service.
 
 ## Protected assets
 
@@ -16,7 +16,7 @@ This document defines the security boundary for Rails SaaS Guard 0.1. It is inte
 untrusted client
     -> CDN / load balancer (optional)
     -> reviewed reverse proxy
-    -> Rack::Attack + Rails SaaS Guard
+    -> Rack::Attack + Rails Shield
     -> Rails routes, authentication and application code
     -> shared cache store
 
@@ -44,7 +44,7 @@ The baseline does not assume an attacker already controls the Rails process, hos
 - A proxy may supply the client address only after Rails has been configured to trust that exact proxy. Untrusted forwarding headers must not create independent rate-limit identities.
 - Shared-IP deployments must retain conservative global limits and prefer account or user dimensions for expensive authenticated work.
 - Blocking and throttling responses must remain cache-resistant, accessible, and appropriate for HTML and JSON clients.
-- Cache outage behavior is inherited from Rack::Attack and the configured Rails cache adapter. Operators must deliberately choose and document whether their adapter fails open or raises; Rails SaaS Guard does not silently replace that policy.
+- Cache outage behavior is inherited from Rack::Attack and the configured Rails cache adapter. Operators must deliberately choose and document whether their adapter fails open or raises; Rails Shield does not silently replace that policy.
 
 ### Operations
 
@@ -80,7 +80,7 @@ Every traffic-affecting rule needs an assumed-red malicious case, encoding and m
 
 ## Explicit non-goals
 
-Rails SaaS Guard does not provide TLS security, kernel or container isolation, malware scanning, authentication correctness, authorization, CSRF or XSS prevention beyond Rails itself, SQL-injection prevention, upload inspection, webhook authenticity, browser defenses, secret storage, volumetric DDoS absorption, or protection after host/process compromise. Optional prompt-injection controls and a possible future Rails-aware WAF remain roadmap work.
+Rails Shield does not provide TLS security, kernel or container isolation, malware scanning, authentication correctness, authorization, CSRF or XSS prevention beyond Rails itself, SQL-injection prevention, upload inspection, webhook authenticity, browser defenses, secret storage, volumetric DDoS absorption, or protection after host/process compromise. Optional prompt-injection controls and a possible future Rails-aware WAF remain roadmap work.
 
 ## Review triggers
 

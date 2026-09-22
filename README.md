@@ -1,8 +1,8 @@
-# Rails SaaS Guard
+# Rails Shield
 
-Secure, conservative defaults for production Rails SaaS applications, from request throttling to deployment-level bot protection.
+Secure runtime and deployment defaults for production Rails applications, with a Rack-compatible core.
 
-Rails SaaS Guard packages configurable Rack::Attack policies, safe response behavior, testable Rails integration, and explicit Ubuntu operations templates. It is a defense layer—not a WAF, authentication framework, vulnerability scanner, or substitute for timely Rails, Ruby, dependency, proxy, and operating-system updates.
+Rails Shield packages configurable Rack::Attack policies, safe response behavior, testable Rails integration, and explicit Ubuntu operations templates. It is a defense layer—not a WAF, authentication framework, vulnerability scanner, or substitute for timely Rails, Ruby, dependency, proxy, and operating-system updates.
 
 ## What v0.1 provides
 
@@ -17,7 +17,7 @@ Rails SaaS Guard packages configurable Rack::Attack policies, safe response beha
 - HTML and JSON 403/429 responses with `Retry-After` for throttles.
 - Ubuntu 24.04 fail2ban, UFW, Nginx, and SSH modules with preview and confirmation.
 
-Aggressive behavior is opt-in. Rails SaaS Guard deliberately does not block all `/admin` or `/.well-known` routes, does not ban clients after a couple of ordinary 404 responses, and does not use user-agent strings as decisive evidence.
+Aggressive behavior is opt-in. Rails Shield deliberately does not block all `/admin` or `/.well-known` routes, does not ban clients after a couple of ordinary 404 responses, and does not use user-agent strings as decisive evidence.
 
 ## Requirements
 
@@ -36,36 +36,36 @@ The initial operations installer supports Ubuntu 24.04 LTS only.
 Add the gem:
 
 ```ruby
-gem "rails_saas_guard"
+gem "rails_shield"
 ```
 
 Then run:
 
 ```sh
 bundle install
-bin/rails generate rails_saas_guard:install
+bin/rails generate rails_shield:install
 ```
 
-The generator writes `config/initializers/rails_saas_guard.rb`. Review it before deployment.
+The generator writes `config/initializers/rails_shield.rb`. Review it before deployment.
 
 ## Five-minute conservative setup
 
 ```ruby
-RailsSaasGuard.configure do |config|
+RailsShield.configure do |config|
   config.general_requests limit: 300, period: 5.minutes
   config.devise_defaults!
 end
 ```
 
-The Railtie installs configured policies after Rails initializes. A non-Rails Rack application can configure the gem and call `RailsSaasGuard.install!` explicitly.
+The Railtie installs configured policies after Rails initializes. A non-Rails Rack application can configure the gem and call `RailsShield.install!` explicitly.
 
 Sensitive discriminators require a secret. Rails applications use `secret_key_base` by default. To isolate the keys, use an independent credential:
 
 ```ruby
-config.discriminator_secret = Rails.application.credentials.rails_saas_guard_secret
+config.discriminator_secret = Rails.application.credentials.rails_shield_secret
 ```
 
-Outside Rails, set `RAILS_SAAS_GUARD_SECRET` or assign `discriminator_secret` directly. Rotating it resets sensitive throttle buckets.
+Outside Rails, set `RAILS_SHIELD_SECRET` or assign `discriminator_secret` directly. Rotating it resets sensitive throttle buckets.
 
 ## Endpoint policies
 
@@ -128,7 +128,7 @@ This blocks `PROPFIND`, `PROPPATCH`, `MKCOL`, `COPY`, `MOVE`, `LOCK`, `UNLOCK`, 
 
 Rate limiting is only as correct as `request.ip`. Configure Rails trusted proxies for the actual Nginx, Thruster, load-balancer, or CDN hops. Never trust forwarded headers from arbitrary clients. Test direct requests, every proxy hop, spoofed `Forwarded`/`X-Forwarded-For`, IPv4, IPv6, and IPv4-mapped IPv6 before enabling strict IP limits.
 
-Cloudflare deployments should accept client-IP headers only from Cloudflare's published network ranges at the edge. Rails SaaS Guard does not silently alter `ActionDispatch::RemoteIp` because the correct trust boundary is deployment-specific.
+Cloudflare deployments should accept client-IP headers only from Cloudflare's published network ranges at the edge. Rails Shield does not silently alter `ActionDispatch::RemoteIp` because the correct trust boundary is deployment-specific.
 
 ## Cache behavior
 
@@ -181,13 +181,13 @@ Apply selected modules interactively:
 ./ops/install.sh --modules fail2ban,nginx
 ```
 
-The script prints its plan and requires typing `yes`. Sudo itself requests the password via `sudo -v`; Rails SaaS Guard never reads or stores it. For deliberate unattended deployment:
+The script prints its plan and requires typing `yes`. Sudo itself requests the password via `sudo -v`; Rails Shield never reads or stores it. For deliberate unattended deployment:
 
 ```sh
 ./ops/install.sh --yes --modules fail2ban,nginx
 ```
 
-The installer backs up replaced files under `/var/backups/rails-saas-guard/<timestamp>/`, validates fail2ban/Nginx/SSH before reloads, and refuses SSH password hardening unless the current user has an `authorized_keys` file. The Nginx snippet is installed but not automatically included or reloaded.
+The installer backs up replaced files under `/var/backups/rails-shield/<timestamp>/`, validates fail2ban/Nginx/SSH before reloads, and refuses SSH password hardening unless the current user has an `authorized_keys` file. The Nginx snippet is installed but not automatically included or reloaded.
 
 Existing configuration files retain their complete available filesystem metadata, including numeric ownership, mode, ACLs, extended attributes, capabilities, and security context where the filesystem and `cp --preserve=all` support them. Replacement clones the original inode metadata, changes only file content, and atomically renames the candidate on the same filesystem. Rollback removes the candidate inode before restoring the archived 1:1 copy.
 

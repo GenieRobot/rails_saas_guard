@@ -44,7 +44,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :redis_cache_store, {url: ENV.fetch("REDIS_URL"), namespace: "rails-saas-guard-testbed"}
+  config.cache_store = :redis_cache_store, {url: ENV.fetch("REDIS_URL"), namespace: "rails-shield-testbed"}
 
   # The deterministic test network assigns Nginx 172.28.0.10. Only that hop is
   # trusted; attacker-supplied forwarding headers are overwritten at the edge.

@@ -15,7 +15,7 @@ printf 'original\n' > "$target"
 printf 'replacement\n' > "$source_file"
 chmod 0640 "$target"
 
-if command -v setfattr >/dev/null; then setfattr -n user.rails_saas_guard_test -v preserved "$target"; fi
+if command -v setfattr >/dev/null; then setfattr -n user.rails_shield_test -v preserved "$target"; fi
 if command -v setfacl >/dev/null; then setfacl -m "u:$(id -u):rw" "$target"; fi
 
 # shellcheck source=lib/file_transaction.sh
@@ -25,7 +25,7 @@ rsg_backup_and_install "$source_file" "$target"
 [[ "$(cat "$target")" == "replacement" ]]
 [[ "$(stat -c '%u:%g:%a' "$target")" == "$before_stat" ]]
 if command -v getfattr >/dev/null; then
-  [[ "$(getfattr --only-values -n user.rails_saas_guard_test "$target")" == "preserved" ]]
+  [[ "$(getfattr --only-values -n user.rails_shield_test "$target")" == "preserved" ]]
 fi
 
 printf 'damaged\n' > "$target"
@@ -33,7 +33,7 @@ rsg_restore_changes
 [[ "$(cat "$target")" == "original" ]]
 [[ "$(stat -c '%u:%g:%a' "$target")" == "$before_stat" ]]
 if command -v getfattr >/dev/null; then
-  [[ "$(getfattr --only-values -n user.rails_saas_guard_test "$target")" == "preserved" ]]
+  [[ "$(getfattr --only-values -n user.rails_shield_test "$target")" == "preserved" ]]
 fi
 grep -q $'^replaced\t' "$backup_dir/manifest.tsv"
 echo "File transaction checks passed"

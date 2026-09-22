@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module RailsSaasGuard
+module RailsShield
   class Responder
     def initialize(status:) = (@status = status)
 

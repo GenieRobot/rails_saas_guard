@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace
-COPY Gemfile Gemfile.lock rails_saas_guard.gemspec /workspace/
+COPY Gemfile Gemfile.lock rails_shield.gemspec /workspace/
 COPY lib /workspace/lib
 COPY testbed/app/Gemfile /workspace/testbed/app/Gemfile
 WORKDIR /workspace/testbed/app

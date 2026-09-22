@@ -41,8 +41,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           grep -q '^- CVE-' threat-report.md || exit 0
-          title="Rails SaaS Guard threat candidates $(date -u +%F)"
-          existing=$(gh issue list --state open --search '"Rails SaaS Guard threat candidates" in:title' --json number --jq 'length')
+          title="Rails Shield threat candidates $(date -u +%F)"
+          existing=$(gh issue list --state open --search '"Rails Shield threat candidates" in:title' --json number --jq 'length')
           if [[ "$existing" == "0" ]]; then
             gh issue create --title "$title" --body-file threat-report.md
           fi

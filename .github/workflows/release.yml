@@ -19,8 +19,8 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
       - run: bundle exec rake
-      - run: gem build rails_saas_guard.gemspec
+      - run: gem build rails_shield.gemspec
       - name: Publish after protected-environment approval
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-        run: gem push rails_saas_guard-*.gem
+        run: gem push rails_shield-*.gem
