@@ -16,6 +16,19 @@ RSpec.describe RailsSaasGuard do
     expect(value).not_to include("person")
   end
 
+  it "requires a secret for every sensitive discriminator regardless of policy name" do
+    described_class.configuration.endpoint(
+      "expensive/account",
+      path: "/expensive",
+      limit: 2,
+      period: 60,
+      discriminator: ->(request) { request.get_header("HTTP_X_ACCOUNT_ID") }
+    )
+
+    expect { described_class.configuration.validate! }
+      .to raise_error(RailsSaasGuard::ConfigurationError, "set discriminator_secret or RAILS_SAAS_GUARD_SECRET")
+  end
+
   it "blocks PHP script paths case-insensitively and through bounded encoding" do
     inspector = RailsSaasGuard::RequestInspector.new(described_class.configuration)
     %w[/index.php /INDEX.PHP /foo.php/bar /%69ndex%252ephp].each do |path|

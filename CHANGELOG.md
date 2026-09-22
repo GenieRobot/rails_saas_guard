@@ -1,5 +1,6 @@
 ## [Unreleased]
 
+- Require an HMAC secret for every sensitive discriminator, independent of its policy name.
 - Add a bounded threat model and explicit compatibility matrix.
 - Exercise Rack 2.2/3.2 and Rails 7.1–8.1 combinations in CI.
 

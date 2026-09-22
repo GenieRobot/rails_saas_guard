@@ -53,12 +53,12 @@ module RailsSaasGuard
         value = block.call(r)
         RailsSaasGuard.sensitive_key(value) if value && !value.empty?
       } : block
-      @throttles << {name: "rails_saas_guard/#{name}", limit:, period:, discriminator:}
+      @throttles << {name: "rails_saas_guard/#{name}", limit:, period:, sensitive:, discriminator:}
     end
 
     def validate!
       raise ConfigurationError, "throttle limits and periods must be positive" if throttles.any? { |p| p[:limit] <= 0 || p[:period] <= 0 }
-      if throttles.any? { |p| p[:name].match?(/identity|token|portal/) } && discriminator_secret.to_s.empty?
+      if throttles.any? { |policy| policy[:sensitive] } && discriminator_secret.to_s.empty?
         raise ConfigurationError, "set discriminator_secret or RAILS_SAAS_GUARD_SECRET"
       end
     end
